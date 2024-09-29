@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Popper Tutorial</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Popper.css">
+    <title>Document</title>
+</head>
+<body>
+    <!--The aria-describedby="tooltip" - it gives the id of an element that provides some 
+    additional information about the current element that some users might need. -->
+    <button id="button" aria-describedby="tooltip">My button</button>
+    <!--The role="tooltip" - It helps aria-describedby point to an element with a valid role. -->
+    <div id="tooltip" role="tooltip">
+        My tooltip
+    <!--Add an arrow element with a data-popper-arrow-->
+        <div id="arrow" data-popper-arrow></div>
+    </div>
+
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+    <script>
+        const button = document.querySelector('#button');
+        const tooltip = document.querySelector('#tooltip'); 
+
+        const popperInstance = Popper.createPopper(button, tooltip, {
+            // Creating a distance of 8px
+            modifiers: [
+                {
+                    name: 'offset', 
+                    options: { 
+                        offset: [0, 8]
+                    }
+                }
+            ]
+        }); 
+
+        function show() { 
+            // Make the tooltip visible
+            tooltip.setAttribute('data-show', '');
+
+            //Enable the event listeners
+            popperInstance.setOptions((options) => ({
+                ...options,
+                modifers: [
+                    ...options.modifers,
+                    { name: 'eventListeners', enabled: true}
+                ]
+            }));
+
+            // Telling Popper to update the tooltip position
+            // after showing the tooltip, otherwise it will be incorrect
+            popperInstance.update(); 
+        }
+
+        function hide() {
+            tooltip.removeAttribute('data-show');
+
+            //Disable the event listeners
+            popperInstance.setOptions((options) => ({
+                ...options,
+                modifers: [
+                    ...options.modifers,
+                    { name: 'eventListeners', enabled: false}
+                ]
+            }));
+        }
+
+        const showEvents = ['mouseenter', 'focus']; 
+        const hideEvents = ['mouseleave', 'blur']; 
+
+        showEvents.forEach((event) => { 
+            button.addEventListener(event, show);
+        });
+
+        hideEvents.forEach((event) => { 
+            button.addEventListener(event, hide);
+        });
+
+        
+    </script>
+</body>
+</html>
